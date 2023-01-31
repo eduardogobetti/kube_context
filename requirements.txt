@@ -1,0 +1,6 @@
+rich
+pyinstaller
+requests
+click
+pick
+psutil
