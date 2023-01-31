@@ -1,18 +1,25 @@
-from glob import glob
+import glob
 import os
 from pathlib import Path
 import shutil
-from rich.pretty import pprint
-from rich.prompt import Confirm
+from pick import pick
+from rich.console import Console
+
 
 def k_get_context():
-    return [os.path.basename(file) for file in glob(f'{Path.home()}/.kube/context/*.yml')]
+    return [os.path.basename(file) for file in glob.glob(f'{Path.home()}/.kube/context/*.yml')]
 
-def k_set_context(option):
-    shutil.copyfile(f'{Path.home()}/.kube/context/{option}', f'{Path.home()}/.kube/config')
+
+def k_set_context(_option):
+    shutil.copyfile(f'{Path.home()}/.kube/context/{_option}', f'{Path.home()}/.kube/config')
+
 
 if __name__ == '__main__':
-    options = k_get_context()
-    selected = Confirm.choices("Selecione o contexto kubernetes:", options)
-    option = selected[0] if selected else None
-    k_set_context(option)
+    console = Console()
+    opcoes = k_get_context()
+    if len(opcoes) > 0:
+        title = 'Selecione o contexto kubernetes: '
+        option, index = pick(opcoes, title, indicator='=>')
+        k_set_context(option)
+    else:
+        console.print("Não foi encontrado nenhum perfil.", style="bold red")
